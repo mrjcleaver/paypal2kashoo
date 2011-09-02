@@ -1,0 +1,5 @@
+This script takes an export CSV from PayPal and produces a CSV that Kashoo can import as a Multicurrency Bank Statement.
+
+The code isn't elegant but it does work.
+
+Please read the comments at the start of the paypal2kashoo.pl file
