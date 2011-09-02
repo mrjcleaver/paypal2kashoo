@@ -25,7 +25,7 @@ our $eol = "\r\n";
 
 #die Dumper \%skip;
 
-my $config_file = 'kashoopaypal.config';
+my $config_file = 'paypal2kashoo.config';
 require $config_file;
 
 # Pass the name of the CSV file as a parameter to this script
@@ -35,8 +35,7 @@ my $input = $ARGV[0] || die "Pass name of CSV file containing Paypal transaction
 use POSIX qw(strftime);
 my $today = strftime "%Y-%m-%d", localtime;
 
-my $outputFile = $input.'output-$today.csv';
-my $outFH = open ('>$outputFile', w) || die "Can't write to $outputFile - $!";
+my $outputFile = $input."-output-$today.csv";
 
 # SMELL - these parameters should be configurable.
 my $start = 1; # 1, or a previous value of $limit - $count...
@@ -45,13 +44,15 @@ my $limit = 1000; # how many records to input; a sample of 1 is a good test!
 my $justPretend = 0;
 # TODO - a log would be nice
 
-
-
-
 use Tie::Handle::CSV;
 
 # You might need to clean up the heading line to remove spaces.
-my $fh = Tie::Handle::CSV->new($input, header => 1, key_case => 'any'); # Seems to need to be a Windows CSV file, without ^Ms
+my $inputFH = Tie::Handle::CSV->new($input, header => 1, key_case => 'any'); # Seems to need to be a Windows CSV file, without ^Ms
+open (my $outFH, ">", "$outputFile") || die "Can't write to $outputFile - $!";
+
+#Doesn't work
+#my $outputFH = Tie::Handle::CSV->new($outputFile, open_mode => '>' )  ; #|| die "Can't write to $outputFile - $!";
+
 
 my $lineNumber = 1; # Because spreadsheets show to users first line as line 1
 my $countDone = 0; 
@@ -63,11 +64,11 @@ my $rememberedToCurrency = '';
 my $rememberedName = '';
 my $prevName = ''; # So a currency entry can refer to the user's description of the transaction
 
-output($fh->header);
+output($inputFH->header);
 
 print "Starting at line $start\n";
 print "Stopping after $limit lines\n";
-while (my $csv_line = <$fh>) {
+while (my $csv_line = <$inputFH>) {
     $lineNumber++;
 
     print "\n";
@@ -102,9 +103,6 @@ while (my $csv_line = <$fh>) {
     $payment_type =~ s/\]/\)/;
     $csv_line->{'Payment Type'} = $payment_type;
 
-
-
-    my $freshbooks_task_number = $task;
  
     if ($skip{$type}) {
 	print "Skipping $date $name because it is of type $type\n";
@@ -125,36 +123,58 @@ while (my $csv_line = <$fh>) {
 		    print "\tTRANSFER! Of ".$csv_line->{'Net'}.$rememberedFromCurrency." to ". $rememberedToAmount.$rememberedToCurrency."\n"; 
 		    my $transfer_description ="$rememberedToAmount $rememberedToCurrency from $rememberedFromCurrency ($rememberedName/$rememberedTxnID) at ".$csv_line->{'Net'}.$rememberedFromCurrency." / ". $rememberedToAmount.$rememberedToCurrency;
 		    print "\t".$transfer_description."\n";
-		    $csv_line->{'name'} = $transfer_description; # overwriting the name
-		    logTransfer($date,$type,$status,$currency,$transfer_description, $csv_line);
+		    logTransfer($transfer_description, $csv_line, $countDone);
 		} else {
 		    die "\tERROR ".$csv_line->{'Reference Txn ID'}." ne $rememberedTxnID";
 		}
 	    }
     } else {
-	logNormal($date, $type, $status, $currency, $name,
-		  $csv_line, $countDone);
+	logNormal( $csv_line, $countDone);
     }
     $prevName = $name;
 
     $countDone ++;
 }
 
-close $fh;
+close $inputFH;
 close $outFH;
 
-sub logNormal {
-    my ($date, $type, $status, $currency, $name, $csv_line, $countDone) = @_;
+print "\nOutput is in $outputFile\n";
 
-#    print "LOGGING NORMAL $countDone: date=$date\ntype=$type\nstatus=$status\nname=$name\n";
+sub lineAsString {
+    my ($csv_line) = @_;
+    return "date='".$csv_line->{'Date'}."'\ttype='".$csv_line->{'Type'}."'\tstatus='".$csv_line->{'Status'}."'\tname='".$csv_line->{'Name'}."'";
+}
+
+sub logNormal {
+    my ($csv_line, $countDone) = @_;
+
+
+    my $s = " - ";
+    # overwriting the name
+    $csv_line->{'name'} =
+	$csv_line->{'Name'}.$s.
+	$csv_line->{'Type'}.$s.
+	$csv_line->{'Note'}.$s.
+	$csv_line->{'To Email Address'}.$s.
+	$csv_line->{'Transaction ID'}.$s.
+	$csv_line->{'Payment Type'}.$s.
+	$csv_line->{'Item Title'}.$s.
+	$csv_line->{'Invoice Number'};
+
+    print "LOGGING NORMAL $countDone:".lineAsString($csv_line)."\n";
     output($csv_line)
 }
 
 
 sub logTransfer {
-    my ($date, $type, $status, $currency, $name, $csv_line) = @_;
+    my ($transfer_description, $csv_line, $countDone) = @_;
 
-    print "LOGGING TRANSFER: date=$date\ntype=$type\nstatus=$status\nname=$name\n";
+    # overwriting the name
+    $csv_line->{'name'} =
+	$transfer_description;
+
+    print "LOGGING TRANSFER $countDone:".lineAsString($csv_line)."\n";
     output($csv_line);
 }
 
