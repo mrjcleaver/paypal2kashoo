@@ -1,0 +1,4 @@
+Date,Time,Time Zone,Name,Type,Status,Currency,Gross,Fee,Net,Note,From Email Address,To Email Address,Transaction ID,Payment Type,Shipping Address,Item Title,Item ID,Shipping and Handling Amount,Insurance Amount,Sales Tax,Option 1 Name,Option 1 Value,Option 2 Name,Option 2 Value,Auction Site,Closing Date,Reference Txn ID,Invoice Number,Custom Number,Receipt ID,Balance,Contact Phone Number,Balance Impact
+09/01/11,7:57:03,PDT,TEST TRANSACTION,Shopping Cart Payment Sent,Completed,USD,-10,0,-10,,You@YourOrg.com,Martin@Cleaver.org,6K338567NB388074T,PayPal balance,,Shopping Cart,,0,,0,,,,,,,,,,,0,,Debit
+09/01/11,7:57:03,PDT,From Canadian Dollar,Currency Conversion,Completed,USD,10,0,10,,,,110500018F693881B,,,,,,,,,,,,,,6K338567NB388074T,,,,10,,Credit
+09/01/11,7:57:03,PDT,To U.S. Dollar,Currency Conversion,Completed,CAD,-10.6,0,-10.6,,,,6PT275867Y786821V,,,,,,,,,,,,,,6K338567NB388074T,,,,217.18,,Debit
