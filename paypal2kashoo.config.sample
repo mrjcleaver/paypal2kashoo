@@ -1,0 +1,9 @@
+our %skip = ('Temporary Hold' => '1',
+    'Request Received' => '1',
+    'Order' => '1',
+    'Request Sent' => '1',
+);
+
+#our $cr = "\r\n";
+
+1;
