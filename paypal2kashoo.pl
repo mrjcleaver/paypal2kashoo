@@ -8,6 +8,9 @@ use Data::Dumper;
 # By Martin Cleaver http://martin.cleaver.org
 # 2 Sep 2011
 
+# KNOWN BUG - Unsupported Binary Format when loading into Kashoo
+# I usually load the csv into Excel and save as xls (2004) and try again. Sorry!
+
 # This script takes an export file from PayPal and manipulates it so Kashoo, aided by the user, can do something intelligent with it
 # It alters debits and credits from across currencies into something that the book-keeper can process as currency transfers
 #
@@ -20,7 +23,7 @@ use Data::Dumper;
 # Do so on Github, please.
 
 our %skip = ('Temporary Hold' => 1);
-our $eol = "\r\n";
+our $eol = "\n";
 #print "skip ". $skip{'Temporary Hold'}."\n";
 
 #die Dumper \%skip;
