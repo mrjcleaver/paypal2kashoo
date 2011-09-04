@@ -1,5 +1,32 @@
 This script takes an export CSV from PayPal and produces a CSV that Kashoo can import as a Multicurrency Bank Statement.
+* It replaces adjacent transaction currency double entries with a transfer between those currencies associated with the transaction.
 
 The code isn't elegant but it does work.
 
 Please read the comments at the start of the paypal2kashoo.pl file
+
+Process
+-------
+
+1. Export the CSV - All Transactions for the period in question
+2. paypal2kashoo.pl yourcsvfile.csv
+3. open yourcsvfile.csv-output*.csv in Excel
+4. Export the csv file as CSV (Otherwise Kashoo will complain unsupported binary format)
+5. Import this new CSV as Bank Statement
+
+Setting up the Kashoo List
+--------------------------
+a. New List
+b. Account = PayPal
+c. Net = Amount
+d. Ignore any text columns except Description (this script gathers these for you)
+6. Look at the *fee account generated - you will have to adjust your Kashoo entries to express the fees as a separate transaction.
+
+Caveats
+-------
+
+The import script is no substitute for accounting expertise.
+
+PayPal incoming transactions should be lodged as Payments on existing invoices. 
+It looks like they actually get brought in as new Income items, instant (where the payment account shows Paid). 
+This means you need to revisit the income items and restate them as payments.

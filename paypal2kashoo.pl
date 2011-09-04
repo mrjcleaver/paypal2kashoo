@@ -39,6 +39,8 @@ use POSIX qw(strftime);
 my $today = strftime "%Y-%m-%d", localtime;
 
 my $outputFile = $input."-output-$today.csv";
+my $feeFile = $input."-output-$today.fees";
+
 
 # SMELL - these parameters should be configurable.
 my $start = 1; # 1, or a previous value of $limit - $count...
@@ -52,6 +54,7 @@ use Tie::Handle::CSV;
 # You might need to clean up the heading line to remove spaces.
 my $inputFH = Tie::Handle::CSV->new($input, header => 1, key_case => 'any'); # Seems to need to be a Windows CSV file, without ^Ms
 open (my $outFH, ">", "$outputFile") || die "Can't write to $outputFile - $!";
+open (my $feeFH, ">", "$feeFile") || die "Can't write to $feeFile - $!";
 
 #Doesn't work
 #my $outputFH = Tie::Handle::CSV->new($outputFile, open_mode => '>' )  ; #|| die "Can't write to $outputFile - $!";
@@ -112,6 +115,17 @@ while (my $csv_line = <$inputFH>) {
 	next;
     }
 
+
+    my $fee = $csv_line->{'Fee'};
+    if ($fee < 0) {
+	my $currency = $csv_line->{'Currency'};
+	my $gross = $csv_line->{'Gross'};
+	my $net = $csv_line->{'Net'};
+	my $feeDescription = "FEE of ".$fee." ".$currency." for ".$type." on ".$gross." (leaving ".$net." net) from ".$name." on ".$date;
+#	print "\t".$feeDescription."\n";
+	logFee($feeDescription, $csv_line, $countDone);
+    }
+
     if ($type eq "Currency Conversion") {
 	    if ($name =~ m/From/) {
 		$rememberedToAmount = $csv_line->{'Net'};
@@ -141,8 +155,11 @@ while (my $csv_line = <$inputFH>) {
 
 close $inputFH;
 close $outFH;
+close $feeFH;
 
 print "\nOutput is in $outputFile\n";
+print "\nFees are in $feeFile - you have to account for these manually!\n";
+
 
 sub lineAsString {
     my ($csv_line) = @_;
@@ -180,6 +197,21 @@ sub logTransfer {
     print "LOGGING TRANSFER $countDone:".lineAsString($csv_line)."\n";
     output($csv_line);
 }
+
+
+sub logFee {
+    my ($fee_description, $csv_line, $countDone) = @_;
+
+    # overwriting the name
+    $csv_line->{'name'} =
+	$fee_description;
+
+#    print "LOGGING FEE $countDone:".lineAsString($csv_line)."\n";
+#    print $feeFH ($csv_line);
+    print $feeFH $fee_description."\n";
+}
+
+
 
 sub output {
     my ($output) = @_;
