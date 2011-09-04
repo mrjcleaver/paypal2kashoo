@@ -13,6 +13,8 @@ Process
 3. open yourcsvfile.csv-output*.csv in Excel
 4. Export the csv file as CSV (Otherwise Kashoo will complain unsupported binary format)
 5. Import this new CSV as Bank Statement
+6. Look at the *fee account generated - you will have to adjust your Kashoo entries to express the fees as a separate transaction.
+
 
 Setting up the Kashoo List
 --------------------------
@@ -20,7 +22,7 @@ a. New List
 b. Account = PayPal
 c. Net = Amount
 d. Ignore any text columns except Description (this script gathers these for you)
-6. Look at the *fee account generated - you will have to adjust your Kashoo entries to express the fees as a separate transaction.
+
 
 Caveats
 -------
