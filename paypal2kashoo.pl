@@ -8,6 +8,8 @@ use Data::Dumper;
 # By Martin Cleaver http://martin.cleaver.org
 # 2 Sep 2011
 
+# You WILL need to clean up the heading line to remove spaces between the key names
+
 # KNOWN BUG - Unsupported Binary Format when loading into Kashoo
 # I usually load the csv into Excel and save as xls (2004) and try again. Sorry!
 
@@ -116,6 +118,14 @@ while (my $csv_line = <$inputFH>) {
     }
 
 
+    unless ($csv_line->{'To Email Address'}) {
+	$csv_line->{'To Email Address'} = 'NIL email';
+    }
+    unless ($csv_line->{'Transaction ID'}) {
+	$csv_line->{'Transaction ID'} = 'NIL txn id';
+    }
+
+
     my $fee = $csv_line->{'Fee'};
     if ($fee < 0) {
 	my $currency = $csv_line->{'Currency'};
@@ -183,6 +193,7 @@ sub logNormal {
 	$csv_line->{'Invoice Number'};
 
     print "LOGGING NORMAL $countDone:".lineAsString($csv_line)."\n";
+
     output($csv_line)
 }
 
