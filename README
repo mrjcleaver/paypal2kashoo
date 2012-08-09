@@ -14,7 +14,7 @@ Process
 4. Export the csv file as CSV (Otherwise Kashoo will complain unsupported binary format)
 5. Import this new CSV as Bank Statement
 6. Look at the *fee account generated - you will have to adjust your Kashoo entries to express the fees as a separate transaction.
-
+7. Go through the transfer transactions (e.g. CAD to USD) - you need to read each transfer and apply the change of currency.
 
 Setting up the Kashoo List
 --------------------------
