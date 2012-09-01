@@ -1,5 +1,6 @@
 This script takes an export CSV from PayPal and produces a CSV that Kashoo can import as a Multicurrency Bank Statement.
 * It replaces adjacent transaction currency double entries with a transfer between those currencies associated with the transaction.
+* You then need to go through the transfers, using the Memo as a source of information for the transfers: the memo shows the exchange rate and the associated client
 
 The code isn't elegant but it does work.
 
@@ -8,13 +9,14 @@ Please read the comments at the start of the paypal2kashoo.pl file
 Process
 -------
 
-1. Export the CSV - All Transactions for the period in question
-2. paypal2kashoo.pl yourcsvfile.csv
-3. open yourcsvfile.csv-output*.csv in Excel
-4. Export the csv file as CSV (Otherwise Kashoo will complain unsupported binary format)
-5. Import this new CSV as Bank Statement
-6. Look at the *fee account generated - you will have to adjust your Kashoo entries to express the fees as a separate transaction.
-7. Go through the transfer transactions (e.g. CAD to USD) - you need to read each transfer and apply the change of currency.
+1. Export the CSV: In PayPal "Reports > Download History > "For the period in question "All Activity Transactions"
+2. Adjust paypal2kashoo.config - it says which transactions should be included in the output
+3. paypal2kashoo.pl yourcsvfile.csv
+4. open yourcsvfile.csv-output*.csv in Excel
+5. Export the csv file as CSV (Otherwise Kashoo will complain unsupported binary format)
+6. Import this new CSV as Bank Statement
+7. Look at the *fee account generated - you will have to adjust your Kashoo entries to express the fees as a separate transaction.
+8. Go through the transfer transactions (e.g. CAD to USD) - you need to read each transfer and apply the change of currency.
 
 Setting up the Kashoo List
 --------------------------
