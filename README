@@ -6,10 +6,15 @@ The code isn't elegant but it does work.
 
 Please read the comments at the start of the paypal2kashoo.pl file
 
+Install
+-------
+sudo cpan Tie::Handle::CSV
+
 Process
 -------
 
-1. Export the CSV: In PayPal "Reports > Download History > "For the period in question "All Activity Transactions"
+1. Export the CSV: In PayPal "Reports > Download History > Custom Date Range (For the period in question)"
+1b. File Types for Download: "Comma Delimited - All Activity"
 2. Adjust paypal2kashoo.config - it says which transactions should be included in the output
 3. paypal2kashoo.pl yourcsvfile.csv
 4. open yourcsvfile.csv-output*.csv in Excel
